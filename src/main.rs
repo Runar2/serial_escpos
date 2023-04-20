@@ -1,14 +1,14 @@
 
 
-use std::{time::Duration, env, io, str};
-use tokio_util::codec::{Decoder, Encoder};
+use std::{io, str};
+use tokio_util::codec::{Decoder};
 
 use bytes::BytesMut;
 
-use serialport::{self, SerialPortBuilder, Parity};
+use serialport::{self, SerialPortBuilder};
 use tokio_serial::SerialPortBuilderExt;
 
-use futures::stream::StreamExt;
+
 
 #[cfg(unix)]
 const DEFAULT_TTY: &str = "/dev/ttyUSB0";
@@ -24,7 +24,7 @@ impl Decoder for LineCodec {
         if let Some(n) = newline {
             let line = src.split_to(n+1);
             return match str::from_utf8(line.as_ref()) {
-                Ok(s) => Ok(Some((s.to_string()))),
+                Ok(s) => Ok(Some(s.to_string())),
                 Err(_) => Err(io::Error::new(io::ErrorKind::Other, "Invalid String")),
             };
         }
@@ -48,9 +48,9 @@ fn list_ports(){
     }
 }
 
-fn print_and_cut(printer_read: SerialPortBuilder, content: String, cut: bool){
+fn print_and_cut(_printer_read: SerialPortBuilder, _content: String, _cut: bool){
 }
 
 fn please_work(){
-    let mut async_printer = tokio_serial::new("/dev/ttyUSB0", 38400).open_native_async();
+    let _async_printer = tokio_serial::new("/dev/ttyUSB0", 38400).open_native_async();
 }
