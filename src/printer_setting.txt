@@ -1,0 +1,11 @@
+
+
+let mut printer_read = serialport::new("/dev/ttyUSB0",
+    38400)
+    .data_bits(serialport::DataBits::Eight)
+    .flow_control(serialport::FlowControl::Software)
+    .stop_bits(serialport::StopBits::One)
+    .timeout(Duration::from_millis(10))
+    .parity(Parity::Even)
+    .open()
+    .expect("Failed to open printer_read :-(");
