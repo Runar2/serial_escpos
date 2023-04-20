@@ -1,12 +1,15 @@
 
 
-use std::{io, str};
-use tokio_util::codec::{Decoder};
+use std::{io,env, str, time::Duration};
+use futures::StreamExt;
+use tokio_util::codec::{Decoder, Encoder};
 
 use bytes::BytesMut;
 
 use serialport::{self, SerialPortBuilder};
 use tokio_serial::SerialPortBuilderExt;
+
+use tokio;
 
 
 
@@ -32,9 +35,38 @@ impl Decoder for LineCodec {
     }
 }
 
+impl Encoder<String> for LineCodec {
+    type Error = io::Error;
 
-fn main(){
-    
+    fn encode(&mut self, item: String, dst: &mut BytesMut) -> Result<(), Self::Error> {
+        Ok(())
+    }
+}
+
+
+#[tokio::main]
+async fn main() -> tokio_serial::Result<()>{
+    let mut args = env::args();
+    let tty_path = args.nth(1).unwrap_or_else(|| DEFAULT_TTY.into());
+
+    let mut port = tokio_serial::new(tty_path, 38400)
+        .data_bits(serialport::DataBits::Eight)
+        .flow_control(serialport::FlowControl::Software)
+        .parity(serialport::Parity::Even)
+        .stop_bits(serialport::StopBits::One)
+        .timeout(Duration::from_millis(10))
+        .open_native_async()?;
+
+    #[cfg(unix)]
+    port.set_exclusive(false).expect("Failed to to set port exclusive to false");
+
+    let mut reader = LineCodec.framed(port);
+
+    while let Some(line_result) = reader.next().await {
+        let line = line_result.expect("Failed to read line :-(");
+        println!("{}", line);
+    }
+    Ok(())
 }
 
 fn list_ports(){
@@ -48,9 +80,3 @@ fn list_ports(){
     }
 }
 
-fn print_and_cut(_printer_read: SerialPortBuilder, _content: String, _cut: bool){
-}
-
-fn please_work(){
-    let _async_printer = tokio_serial::new("/dev/ttyUSB0", 38400).open_native_async();
-}
