@@ -1,17 +1,17 @@
 use std::{time::Duration, thread, io::{self, Write}};
 
-use bytes::buf;
-use serialport;
+
+
 
 
 
 
 
 fn main() {
-    let hex_dump = [29,40,65,2,0,49].as_slice();
-    let cut_test = [29,86,66,10].as_slice();
-    let output = "THIS is a test to see if anything works. 0123456789".as_bytes();
-    let status_print = [29, 73, 69].as_slice();
+    let _hex_dump = [29,40,65,2,0,49].as_slice();
+    let _cut_test = [29,86,66,10].as_slice();
+    let _output = "THIS is a test to see if anything works. 0123456789".as_bytes();
+    let status_print = [29, 73, 67].as_slice();
 
     let ports = serialport::available_ports().expect("No ports found!");
     for p in ports {
